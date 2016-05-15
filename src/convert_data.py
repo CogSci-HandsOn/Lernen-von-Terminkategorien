@@ -13,6 +13,7 @@ import datetime
 
 import numpy as np
 import holidays
+import bisect
 
 
 # Maps the date categories onto integer codes
@@ -209,3 +210,53 @@ def convert_label(label_str):
 	labels = label_str.split(sep=',')
 	return [label_mapping[label] for label in labels]
 
+
+#-->TODO: convert current representation in datetime:start and datetime:end (or datetime:start and timedelta:duration)
+
+def combine_dates(data):
+	"""
+		recodes the data so that the start and endpoints of the event are datetime objects
+	"""
+	return [[datetime.datetime.combine(event[0], event[1]), datetime.datetime.combine(event[0], event[2]), event[3]] for event in data]
+
+#-->TODO: method that checks what the category was deltatime before the event (like a week)
+
+def same_event_before(sorted_data, index, delta_time):
+	"""checks if the event a certain timeinterval delta_time before the event specified with index
+	had the same category
+	"""
+
+	#when combaring lists, python first compares the first index of the list. 
+	target_time = sorted_data[index][0]-delta_time
+
+	try:
+		target_event = sorted_data[index_startdate(sorted_data, target_time)]
+		print("event found")
+		return target_event[2] == sorted_data[index][2] #are they of the same category
+	except ValueError:
+		print(" there was no event found at that time")
+		return False
+
+
+
+# helper
+def index_startdate(data, x):
+    """Locate the leftmost event with start-time exactly equal to x in a sorted list
+    	data is the matrix of data 
+    	x is the startingtime as datetime object. 
+    	returns i: index of event that has the same startingtime
+    """
+    i = bisect.bisect_left(data, [x])
+    #since data is a list of lists we need to envelope the startingdate x in a list so the comparison works
+    if i != len(data) and data[i][0] == x:
+        return i
+    raise ValueError("Element not in list")
+
+
+def get_cool_data(filename = "data"):
+	return combine_dates(convert_data(load_data(filename)))
+
+def test(a=3):
+	print(a)
+
+print("loaded")
