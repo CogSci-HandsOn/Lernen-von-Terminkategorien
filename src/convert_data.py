@@ -161,8 +161,9 @@ def extract_features(data):
 	holiday_dates = holidays.Germany(state='NI')
 
 	for i, sample in enumerate(data):
-		date = data[i][0]
-
+		date = sample[0]
+		start_time = sample[1]
+		end_time = sample[2]
 
 		## Features concerning the date
 		
