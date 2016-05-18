@@ -240,8 +240,12 @@ def same_event_before(sorted_data, index, delta_time):
 
 
 # helper
+
+# TODO: einfach den kategoriewert zurückgeben den es vor delta-time gab. 
+
 def index_startdate(data, x):
-    """Locate the leftmost event with start-time exactly equal to x in a sorted list
+    """ 
+    	Locate the leftmost event with start-time exactly equal to x in a sorted list
     	data is the matrix of data 
     	x is the startingtime as datetime object. 
     	returns i: index of event that has the same startingtime
