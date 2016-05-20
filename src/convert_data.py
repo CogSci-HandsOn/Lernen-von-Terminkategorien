@@ -164,7 +164,7 @@ def extract_features(data):
 
 		## Features concerning the date
 		
-		date = data[i][0].date
+		date = data[i][0].date()
 		for time_offset in range(time_range):
 			day = date + datetime.timedelta(days=time_offset-time_range/2)
 			offset = time_offset*num_features_per_date
