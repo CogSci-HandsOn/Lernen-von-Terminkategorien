@@ -63,17 +63,14 @@ label_mapping = {
 # 	]
 
 
-<<<<<<< HEAD
 def get_features(filename):
 	return extract_features(convert_data(load_data(filename)))
-=======
 def get_features(filename="data"):
 	return extract_features(sorted(convert_data(load_data(filename)))) #we need our data sorted so we can easily acces it later
 
 def get_data(filename="data"):
 	return sorted(convert_data(load_data(filename)))
 
->>>>>>> regelmaessige_termine
 
 def load_data(filename):
 	"""Loads each row of a .csvfile and puts them into a list.
@@ -164,15 +161,12 @@ def extract_features(data):
 	"""
 	time_range = 8
 	num_features_per_date = 12
-<<<<<<< HEAD
 	
 	features = np.zeros((len(data), num_features_per_date*time_range))
-=======
 	delta_times_for_regular_events = [-14, -7, -1, 1, 7, 14 ]
 	#when we later check what the event was e.g. exactly one week before
 	
 	features = np.zeros((len(data), num_features_per_date*time_range+(len(delta_times_for_regular_events))))
->>>>>>> regelmaessige_termine
 	initial_date = datetime.date(2015, 1, 1)
 	holiday_dates = holidays.Germany(state='NI', years=[2015, 2016, 2017, 2018, 2019, 2020])
 
@@ -223,8 +217,6 @@ def extract_features(data):
 
 			# TODO: Brückentag
 
-<<<<<<< HEAD
-=======
 			# taking care of regular events -----
 			# category of event x days different from the current event as feature
 			# e.g. -7: (which event was exactly one week before at the same time)
@@ -236,7 +228,6 @@ def extract_features(data):
 
 
 
->>>>>>> regelmaessige_termine
 		
 
 		
