@@ -1,0 +1,12 @@
+für jede mögliche kategorie eine funktion schreiben, die die regelmässigkeit dafür in einem numerischen wert ausrechnet. 
+z.b. für kategorie A. 
+a(termin)=war es zur gleichen zeit vor ner woche A + zur gleichen zeit vor 2 wochen + zur gleichen zeit vor nem monat et. 
+
+und dass alles iwie gewichtet mit semantischer überlegung
+
+oder für jeden datenpunkt intervall_anzahl * categorie_anzal viel features hinzufügen. war es vor 1er woche categorie A, war es vor 1 woche cat B, etc...
+
+
+10 regelmässigkeits features in eine funktion packen die funktion lernen und nur den funktionswert als feature in den hauptalgorithmus
+
+alle 10 features für jede categorie unverarbeitet in den hauptalgorithmus --> verliert semantische information

@@ -13,7 +13,7 @@ import datetime
 
 import numpy as np
 import holidays
-
+import bisect
 
 # Maps the date categories onto integer codes
 label_mapping = {
@@ -63,8 +63,17 @@ label_mapping = {
 # 	]
 
 
+<<<<<<< HEAD
 def get_features(filename):
 	return extract_features(convert_data(load_data(filename)))
+=======
+def get_features(filename="data"):
+	return extract_features(sorted(convert_data(load_data(filename)))) #we need our data sorted so we can easily acces it later
+
+def get_data(filename="data"):
+	return sorted(convert_data(load_data(filename)))
+
+>>>>>>> regelmaessige_termine
 
 def load_data(filename):
 	"""Loads each row of a .csvfile and puts them into a list.
@@ -155,8 +164,15 @@ def extract_features(data):
 	"""
 	time_range = 8
 	num_features_per_date = 12
+<<<<<<< HEAD
 	
 	features = np.zeros((len(data), num_features_per_date*time_range))
+=======
+	delta_times_for_regular_events = [-14, -7, -1, 1, 7, 14 ]
+	#when we later check what the event was e.g. exactly one week before
+	
+	features = np.zeros((len(data), num_features_per_date*time_range+(len(delta_times_for_regular_events))))
+>>>>>>> regelmaessige_termine
 	initial_date = datetime.date(2015, 1, 1)
 	holiday_dates = holidays.Germany(state='NI', years=[2015, 2016, 2017, 2018, 2019, 2020])
 
@@ -207,6 +223,20 @@ def extract_features(data):
 
 			# TODO: Brückentag
 
+<<<<<<< HEAD
+=======
+			# taking care of regular events -----
+			# category of event x days different from the current event as feature
+			# e.g. -7: (which event was exactly one week before at the same time)
+			start_i_regular = time_range*num_features_per_date
+			#we have time_range times num_features_per_date features so far. so we start after that. (use that as index)
+
+			for i_reg, delta_days in enumerate(delta_times_for_regular_events):
+				features[i,start_i_regular+i_reg] = event_before(data, sample[0], datetime.timedelta(delta_days))
+
+
+
+>>>>>>> regelmaessige_termine
 		
 
 		
@@ -236,3 +266,39 @@ def convert_label(label_str):
 	labels = label_str.split(sep=',')
 	return [label_mapping[label] for label in labels]
 
+def event_before(sorted_data, current_time, delta_time):
+	""" 
+		returns the category of the event delta_time away from the current one. 
+		delta_time is added to the current date
+		if there was no event at exactly that time it will return -1
+	"""
+
+	#when combaring lists, python first compares the first elements of the list. 
+	target_time = current_time+delta_time
+
+	try:
+		target_event = sorted_data[index_startdate(sorted_data, target_time)]
+		#print("event found")
+		return target_event[2][0]  #return the first category of that event. TODO think wether it makes sense to simpy use the first category
+	except ValueError:
+		#print(" there was no event found at that time")
+		return -1 #if no event was found. TODO think wether that makes any sense
+
+
+
+# helper
+
+# TODO: einfach den kategoriewert zurückgeben den es vor delta-time gab. 
+
+def index_startdate(data, x):
+    """ 
+    	Locate the leftmost event with start-time exactly equal to x in a sorted list
+    	data is the matrix of data 
+    	x is the startingtime as datetime object. 
+    	returns i: index of event that has the same startingtime
+    """
+    i = bisect.bisect_left(data, [x])
+    #since data is a list of lists we need to envelope the startingdate x in a list so the comparison works
+    if i != len(data) and data[i][0] == x:
+        return i
+    raise ValueError("Element not in list")
