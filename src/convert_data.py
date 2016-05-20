@@ -63,8 +63,6 @@ label_mapping = {
 # 	]
 
 
-def get_features(filename):
-	return extract_features(convert_data(load_data(filename)))
 def get_features(filename="data"):
 	return extract_features(sorted(convert_data(load_data(filename)))) #we need our data sorted so we can easily acces it later
 
@@ -161,8 +159,6 @@ def extract_features(data):
 	"""
 	time_range = 8
 	num_features_per_date = 12
-	
-	features = np.zeros((len(data), num_features_per_date*time_range))
 	delta_times_for_regular_events = [-14, -7, -1, 1, 7, 14 ]
 	#when we later check what the event was e.g. exactly one week before
 	
@@ -293,3 +289,5 @@ def index_startdate(data, x):
     if i != len(data) and data[i][0] == x:
         return i
     raise ValueError("Element not in list")
+
+    
