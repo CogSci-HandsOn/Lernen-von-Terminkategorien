@@ -94,8 +94,8 @@ def convert_data(raw_data):
 	Calls the 'load_data' function in order to retrieve information from
 	the given input .csv file. This data is then converted into a format
 	that can be used later.
-	The exact date is converted into a 'datetime.date' object. The 
-	beginning and end times are converted into 'datetime.time' objects.
+	The exact starting point is converted into a 'datetime.datetime' object.  
+    The end time is also are converted into 'datetime.datetime' object.
 	The string labels are converted into a coding scheme of integers defined
 	at the top of the module.
 
@@ -110,14 +110,11 @@ def convert_data(raw_data):
 	data = []
 	for i in range(len(raw_data)):
 		data_i = []
-		# Convert date
-		data_i.append(convert_date(raw_data[i][0]))
+		# Convert begin. i.e. date+starttime
+		data_i.append(convert_datetime(raw_data[i][0], raw_data[i][1]))
 
-		# Convert begin
-		data_i.append(convert_time(raw_data[i][1]))
-
-		# Convert ending
-		data_i.append(convert_time(raw_data[i][2]))
+		# Convert end. i.e. date+endtime
+		data_i.append(convert_datetime(raw_data[i][0], raw_data[i][2]))
 
 		# Convert label
 		data_i.append(convert_label(raw_data[i][3]))
@@ -167,7 +164,7 @@ def extract_features(data):
 
 		## Features concerning the date
 		
-		date = data[i][0]
+		date = data[i][0].date
 		for time_offset in range(time_range):
 			day = date + datetime.timedelta(days=time_offset-time_range/2)
 			offset = time_offset*num_features_per_date
@@ -229,13 +226,11 @@ def extract_features(data):
 
 # Conversion helpers
 
-def convert_date(date_str):
+def convert_datetime(date_str, time_str):
 	date_list = [int(x) for x in date_str.split(sep='.')]
-	return datetime.date(date_list[2], date_list[1], date_list[0])
-
-def convert_time(time_str):
 	time_list = [int(x) for x in time_str.split(sep=':')]
-	return datetime.time(time_list[0], time_list[1], time_list[2])
+	return datetime.datetime(date_list[2], date_list[1], date_list[0], time_list[0], time_list[1], time_list[2])
+
 
 def convert_label(label_str):
 	labels = label_str.split(sep=',')
