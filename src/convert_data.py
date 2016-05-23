@@ -1,3 +1,8 @@
+
+# coding: utf-8
+
+# In[156]:
+
 """
 ============
 Convert data
@@ -162,10 +167,16 @@ def extract_features(data):
 	delta_times_for_regular_events = [-14, -7, -1, 1, 7, 14 ]
 	#when we later check what the event was e.g. exactly one week before
 	
-	features = np.zeros((len(data), num_features_per_date*time_range+(len(delta_times_for_regular_events))))
+	features = np.zeros((len(data), num_features_per_date*time_range+(len(delta_times_for_regular_events))+7))
 	initial_date = datetime.date(2015, 1, 1)
 	holiday_dates = holidays.Germany(state='NI', years=[2015, 2016, 2017, 2018, 2019, 2020])
+	timeForm = '%H:%M:%S'
+	startWork = '08:00:00'
+	endWork = '18:00:00'
+	startLunch = '11:30:00'
+	endLunch = '12:30:00'
 
+    
 	for i, sample in enumerate(data):
 
 		## Features concerning the date
@@ -182,15 +193,13 @@ def extract_features(data):
 			# Month of year
 			features[i,2+offset] = day.month
 			# Day of year
-			features[i,3+offset] = day.toordinal() \
-				- datetime.date(day.year, 1, 1).toordinal() + 1
+			features[i,3+offset] = day.toordinal() 				- datetime.date(day.year, 1, 1).toordinal() + 1
 			# Day of month
 			features[i,4+offset] = day.day
 			# Weekday
 			features[i,5+offset] = day.weekday()
 			# Weekend 1 / week 0
-			features[i,6+offset] = features[i,5+offset] == 5 or \
-				features[i,5+offset] == 6
+			features[i,6+offset] = features[i,5+offset] == 5 or 				features[i,5+offset] == 6
 			# Week of year # TODO: Kalenderwoche
 			features[i,7+offset] = np.floor(features[i,3] / 7)
 			# Week of month
@@ -201,8 +210,7 @@ def extract_features(data):
 			try:
 				holiday = holiday_dates[day]
 				# Christmas
-				if holiday == 'Erster Weihnachtstag' or \
-					holiday == 'Zweiter Weihnachtstag':
+				if holiday == 'Erster Weihnachtstag' or 					holiday == 'Zweiter Weihnachtstag':
 					features[i,10+offset] = 1
 				# Easter
 				elif holiday == 'Ostermontag':
@@ -222,14 +230,35 @@ def extract_features(data):
 			for i_reg, delta_days in enumerate(delta_times_for_regular_events):
 				features[i,start_i_regular+i_reg] = event_before(data, sample[0], datetime.timedelta(delta_days))
 
-
-
-		
-
-		
-
+        # Features concerning the time
+		pos = start_i_regular + i_reg + 1
+		begin = str(data[i][0].time())
+		end = str(data[i][1].time())
+        # Duration in seconds
+		features[i,pos] = datetime.timedelta.total_seconds(datetime.datetime.strptime(end,timeForm) - 
+                                                            datetime.datetime.strptime(begin,timeForm))
+        # Extra long entry? (Longer than 3 hours)
+		features[i,pos+1] = int(features[i,pos]>10800)
+        # Extra short entry? (shorter than 1 hour)
+		features[i,pos+2] = int(features[i,pos]<3600)
+        # Before lunch?
+		features[i,pos+3] = int(begin<startLunch)
+        # Not in usual working hours?
+		features[i,pos+4] = int((begin<startWork) or (end>endWork))
+        # Entry over lunch break
+		features[i,pos+5] = int((begin<startLunch) and (end>endLunch))
+        # Conflict/overlap with another entry
+		if date == data[i-1][1].date():
+			endPrev = str(data[i-1][1].time())
+			features[i,pos+6] = int(endPrev > begin)
+		try: # To handle last entry
+			if date == data[i+1][0].date() and features[i,pos+6] == 0:
+				startNext = str(data[i+1][0].time())        
+				features[i,pos+6] = int((startNext < end))
+		except IndexError:
+			features[i,pos+6] = 0
+      
 		## Features concerning the time
-		
 		default_names = ['Ordinal', 'Year', 'Month', 'Day of Year', 'Day of Month',
 			'Weekday', 'Weekend', 'Week of year', 'Week of month', 'Holiday',
 			'Christmas', 'Easter']
@@ -237,7 +266,6 @@ def extract_features(data):
 		for i in range(time_range):
 			for name in default_names:
 				names.append(name+' of day {}'.format(i-4))
-
 	return features, names
 
 
@@ -291,3 +319,4 @@ def index_startdate(data, x):
     raise ValueError("Element not in list")
 
     
+
