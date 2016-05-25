@@ -32,41 +32,6 @@ label_mapping = {
 	'Noch nicht zugeordnet' : 7
 	}
 
-# holidays_2015 = [
-# 	datetime.date(year=2015, month=1, day=1),  # Neujahrstag
-# 	datetime.date(year=2015, month=4, day=3),  # Karfreitag
-# 	datetime.date(year=2015, month=4, day=6),  # Ostermontag
-# 	datetime.date(year=2015, month=5, day=1),  # 1. Mai/ Tag der Arbeit
-# 	datetime.date(year=2015, month=5, day=14),  # Christi Himmelfahrt
-# 	datetime.date(year=2015, month=5, day=25),  # Pfingstmontag
-# 	datetime.date(year=2015, month=10, day=3),  # Tag der deutschen Einheit
-# 	datetime.date(year=2015, month=12, day=25),  # 1. Weihnachtsfeiertag
-# 	datetime.date(year=2015, month=12, day=26)  # 2. Weihnachtsfeiertag
-# 	]
-# holidays_2016 = [
-# 	datetime.date(year=2016, month=1, day=1),  # Neujahrstag
-# 	datetime.date(year=2016, month=3, day=25),  # Karfreitag
-# 	datetime.date(year=2016, month=3, day=28),  # Ostermontag
-# 	datetime.date(year=2016, month=5, day=1),  # 1. Mai/ Tag der Arbeit
-# 	datetime.date(year=2016, month=5, day=5),  # Christi Himmelfahrt
-# 	datetime.date(year=2016, month=5, day=16),  # Pfingstmontag
-# 	datetime.date(year=2016, month=10, day=3),  # Tag der deutschen Einheit
-# 	datetime.date(year=2016, month=12, day=25),  # 1. Weihnachtsfeiertag
-# 	datetime.date(year=2016, month=12, day=26)  # 2. Weihnachtsfeiertag
-# 	]
-# holidays_2017 = [
-# 	datetime.date(year=2017, month=1, day=1),  # Neujahrstag
-# 	datetime.date(year=2017, month=4, day=24),  # Karfreitag
-# 	datetime.date(year=2017, month=4, day=17),  # Ostermontag
-# 	datetime.date(year=2017, month=5, day=1),  # 1. Mai/ Tag der Arbeit
-# 	datetime.date(year=2017, month=5, day=25),  # Christi Himmelfahrt
-# 	datetime.date(year=2017, month=6, day=5),  # Pfingstmontag
-# 	datetime.date(year=2017, month=10, day=3),  # Tag der deutschen Einheit
-# 	datetime.date(year=2017, month=10, day=31),  # Reformationstag
-# 	datetime.date(year=2017, month=12, day=25),  # 1. Weihnachtsfeiertag
-# 	datetime.date(year=2017, month=12, day=26)  # 2. Weihnachtsfeiertag
-# 	]
-
 
 def get_features(filename="data"):
 	return extract_features(sorted(convert_data(load_data(filename)))) #we need our data sorted so we can easily acces it later
@@ -112,8 +77,9 @@ def convert_data(raw_data):
 		filename: The input file name as a string. Needs to be a .csv.
 
 	Returns:
-		A list of which entries are lists containing the data in convenient formats.
-		This list can be used by 'extract_features' in order to retrieve a numeric 
+		A list of which entries are lists containing the data in 
+		convenient formats. It has dimensions of ('num_samples, 4'). This list can
+		be used by 'extract_features' in order to retrieve a numeric 
 		array.
 	"""
 	data = []
@@ -127,7 +93,7 @@ def convert_data(raw_data):
 
 		# Convert label
 		data_i.append(convert_label(raw_data[i][3]))
-		
+
 		# Appends the complete date to the list
 		data.append(data_i)		
 
@@ -164,6 +130,7 @@ def extract_features(data):
 	"""
 	time_range = 8
 	num_features_per_date = 12
+	labels = [0] * len(data)
 	delta_times_for_regular_events = [-14, -7, -1, 1, 7, 14 ]
 	#when we later check what the event was e.g. exactly one week before
 	
@@ -178,7 +145,7 @@ def extract_features(data):
 
     
 	for i, sample in enumerate(data):
-
+		labels[i] = data[i][2][0]
 		## Features concerning the date
 		
 		date = data[i][0].date()
@@ -222,10 +189,12 @@ def extract_features(data):
 			# TODO: Brückentag
 
 			# taking care of regular events -----
-			# category of event x days different from the current event as feature
-			# e.g. -7: (which event was exactly one week before at the same time)
+			# category of event x days different from the current event 
+			# as feature e.g. -7: (which event was exactly one week before 
+			# at the same time)
 			start_i_regular = time_range*num_features_per_date
-			#we have time_range times num_features_per_date features so far. so we start after that. (use that as index)
+			# we have time_range times num_features_per_date features 
+			# so far. so we start after that. (use that as index)
 
 			for i_reg, delta_days in enumerate(delta_times_for_regular_events):
 				features[i,start_i_regular+i_reg] = event_before(data, sample[0], datetime.timedelta(delta_days))
@@ -266,7 +235,8 @@ def extract_features(data):
 		for i in range(time_range):
 			for name in default_names:
 				names.append(name+' of day {}'.format(i-4))
-	return features, names
+
+	return features, labels, names
 
 
 # Conversion helpers
