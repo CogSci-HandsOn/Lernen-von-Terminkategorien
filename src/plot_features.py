@@ -5,10 +5,13 @@ Plot features
 
 
 """
+import itertools
 
 import numpy as np
 import matplotlib.pyplot as plt
 import sklearn.decomposition
+import scipy.spatial.distance
+from mpl_toolkits.mplot3d import Axes3D
 
 import convert_data
 
@@ -88,7 +91,7 @@ def plot_most_interesting_features(features, names=None, maximize=True, thresh=0
 		C[indices] = neutral
 	plt.show()
 
-def plot_principal_components(features, n_components=9):
+def plot_principal_components(features, labels, n_components=3):
 	"""Plots the principal components of 'features'.
 
 	Extracts the principal components of 'features' and plots the 9
@@ -100,18 +103,79 @@ def plot_principal_components(features, n_components=9):
 			'convert_data.get_features'. The principal components will
 			be computed upon this.
 	"""
+	## Perform PCA
 	pca = sklearn.decomposition.PCA(n_components)
-	# pca = sklearn.decomposition.PCA(n_components='mle')
-	pcs = pca.fit_transform(features)
-	for i in range(9):
-		plt.subplot(3, 3, i+1)
-		plt.plot(pcs[:,i])
-	plt.show()
-	print(pcs.shape)
+	features = sklearn.preprocessing.normalize(features, 'max', 0)
+	pcs = pca.fit(features)
+	mapping = pca.transform(features)
 
-features, names = convert_data.get_features('data')
+
+	## Map on three PCs of highest eigenvalues
+	fig = plt.figure(1)
+	fig.suptitle('Features mapped on PCs with largest $\lambda$')
+	ax = fig.add_subplot(111, projection='3d')
+	ax.scatter(mapping[:,0], mapping[:,1], mapping[:,2], c=labels)
+	plt.show()
+
+
+	## Maximize distance of labels
+	print('Maximize distance of labels:')
+	axes_combs = list(itertools.combinations(range(n_components), 3))
+	X = np.empty((len(features), 3))
+	labels = np.array(labels)
+	fig = plt.figure(3)
+	fig.suptitle('Plots mapping on PCs to seperate label 0-7 from others')
+	for label in set(labels):
+	# for label in {0}:
+		print('  Computing best fit for label {}...'.format(label), 
+			end='', flush=True)
+		idx_in = np.where(label==labels)
+		idx_out = np.where(label!=labels)
+
+		best_dist = 0
+		# Iterate through all axis combinations and try to maximize
+		# distance of current label to other observations
+		for axes_i in axes_combs:
+			X[:,0] = mapping[:,axes_i[0]]
+			X[:,1] = mapping[:,axes_i[1]]
+			X[:,2] = mapping[:,axes_i[2]]
+
+			# Compute distance matrix of all observations
+			v = scipy.spatial.distance.pdist(X)
+			dist = scipy.spatial.distance.squareform(v)
+
+			# Compute mean distance of label observations and
+			# weight it according to total number of observations
+			mean = np.mean(
+				[np.mean(dist[r,idx_out[0]]) for r in idx_in[0]])
+			dist_tmp = mean * len(idx_in) / len(features)
+			
+			# Normalize measure with mean distance of all observations
+			dist_tmp /= 0.5 * np.mean(dist)
+ 
+			# Check for new maximal distance of current label
+			if dist_tmp > best_dist:
+				best_dist = dist_tmp
+				axes_of_choice = axes_i
+		ax = fig.add_subplot(3, 3, label+1, projection='3d')
+		ax.set_title('Label {}'.format(label))
+		ax.scatter(
+			mapping[:,axes_of_choice[0]], 
+			mapping[:,axes_of_choice[1]], 
+			mapping[:,axes_of_choice[2]], 
+			c=labels, label=label)
+		ax.set_xlabel(axes_of_choice[0])
+		ax.set_ylabel(axes_of_choice[1])
+		ax.set_zlabel(axes_of_choice[2])
+		plt.legend()
+		print(' done!')
+	plt.show()
+
+	
+features, labels, names = convert_data.get_features(
+	'2016_05_09     HandsOn CogSci ___ Daten f\\303\\274r'
+	' Lernen von Terminkategorien')
 
 # plot_all_features(features, names)
-plot_most_interesting_features(features, names, False, thresh=0.05)
-plot_principal_components(features)
-
+# plot_most_interesting_features(features, names, False, thresh=0.05)
+# plot_principal_components(features, labels, 50)

@@ -27,41 +27,6 @@ label_mapping = {
 	'Noch nicht zugeordnet' : 7
 	}
 
-# holidays_2015 = [
-# 	datetime.date(year=2015, month=1, day=1),  # Neujahrstag
-# 	datetime.date(year=2015, month=4, day=3),  # Karfreitag
-# 	datetime.date(year=2015, month=4, day=6),  # Ostermontag
-# 	datetime.date(year=2015, month=5, day=1),  # 1. Mai/ Tag der Arbeit
-# 	datetime.date(year=2015, month=5, day=14),  # Christi Himmelfahrt
-# 	datetime.date(year=2015, month=5, day=25),  # Pfingstmontag
-# 	datetime.date(year=2015, month=10, day=3),  # Tag der deutschen Einheit
-# 	datetime.date(year=2015, month=12, day=25),  # 1. Weihnachtsfeiertag
-# 	datetime.date(year=2015, month=12, day=26)  # 2. Weihnachtsfeiertag
-# 	]
-# holidays_2016 = [
-# 	datetime.date(year=2016, month=1, day=1),  # Neujahrstag
-# 	datetime.date(year=2016, month=3, day=25),  # Karfreitag
-# 	datetime.date(year=2016, month=3, day=28),  # Ostermontag
-# 	datetime.date(year=2016, month=5, day=1),  # 1. Mai/ Tag der Arbeit
-# 	datetime.date(year=2016, month=5, day=5),  # Christi Himmelfahrt
-# 	datetime.date(year=2016, month=5, day=16),  # Pfingstmontag
-# 	datetime.date(year=2016, month=10, day=3),  # Tag der deutschen Einheit
-# 	datetime.date(year=2016, month=12, day=25),  # 1. Weihnachtsfeiertag
-# 	datetime.date(year=2016, month=12, day=26)  # 2. Weihnachtsfeiertag
-# 	]
-# holidays_2017 = [
-# 	datetime.date(year=2017, month=1, day=1),  # Neujahrstag
-# 	datetime.date(year=2017, month=4, day=24),  # Karfreitag
-# 	datetime.date(year=2017, month=4, day=17),  # Ostermontag
-# 	datetime.date(year=2017, month=5, day=1),  # 1. Mai/ Tag der Arbeit
-# 	datetime.date(year=2017, month=5, day=25),  # Christi Himmelfahrt
-# 	datetime.date(year=2017, month=6, day=5),  # Pfingstmontag
-# 	datetime.date(year=2017, month=10, day=3),  # Tag der deutschen Einheit
-# 	datetime.date(year=2017, month=10, day=31),  # Reformationstag
-# 	datetime.date(year=2017, month=12, day=25),  # 1. Weihnachtsfeiertag
-# 	datetime.date(year=2017, month=12, day=26)  # 2. Weihnachtsfeiertag
-# 	]
-
 
 def get_features(filename):
 	return extract_features(convert_data(load_data(filename)))
@@ -103,8 +68,9 @@ def convert_data(raw_data):
 		filename: The input file name as a string. Needs to be a .csv.
 
 	Returns:
-		A list of which entries are lists containing the data in convenient formats.
-		This list can be used by 'extract_features' in order to retrieve a numeric 
+		A list of which entries are lists containing the data in 
+		convenient formats. It has dimensions of ('num_samples, 4'). This list can
+		be used by 'extract_features' in order to retrieve a numeric 
 		array.
 	"""
 	data = []
@@ -121,7 +87,7 @@ def convert_data(raw_data):
 
 		# Convert label
 		data_i.append(convert_label(raw_data[i][3]))
-		
+
 		# Appends the complete date to the list
 		data.append(data_i)		
 
@@ -158,15 +124,19 @@ def extract_features(data):
 	"""
 	time_range = 8
 	num_features_per_date = 12
+	labels = [0] * len(data)
 	
 	features = np.zeros((len(data), num_features_per_date*time_range))
 	initial_date = datetime.date(2015, 1, 1)
 	holiday_dates = holidays.Germany(state='NI', years=[2015, 2016, 2017, 2018, 2019, 2020])
 
-	for i, sample in enumerate(data):
+	for i in range(len(data)):
+
+		labels[i] = data[i][3][0]
+
 
 		## Features concerning the date
-		
+
 		date = data[i][0]
 		for time_offset in range(time_range):
 			day = date + datetime.timedelta(days=time_offset-time_range/2)
@@ -211,11 +181,6 @@ def extract_features(data):
 			# TODO: Brückentag
 
 		
-
-		
-
-		## Features concerning the time
-		
 		default_names = ['Ordinal', 'Year', 'Month', 'Day of Year', 'Day of Month',
 			'Weekday', 'Weekend', 'Week of year', 'Week of month', 'Holiday',
 			'Christmas', 'Easter']
@@ -224,7 +189,11 @@ def extract_features(data):
 			for name in default_names:
 				names.append(name+' of day {}'.format(i-4))
 
-	return features, names
+		## Features concerning the time
+		
+		
+
+	return features, labels, names
 
 
 # Conversion helpers
