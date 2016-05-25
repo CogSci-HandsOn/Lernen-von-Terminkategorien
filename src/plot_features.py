@@ -33,13 +33,13 @@ def plot_all_features(features, names=None):
 	print(features.shape)
 	for i, f1 in enumerate(features.T):
 		fig = plt.figure(i)
-		if names != None:
+		if names is not None:
 			fig.suptitle(names[i]+' vs.')
 
 		for j, f2 in enumerate(features.T):
 			plt.subplot(num_subplots, num_subplots, j+1)
 			plt.plot(f1, f2)
-			if names != None:
+			if names is not None:
 				plt.title(names[j])
 			else:
 				plt.title('Feature {0}'.format(j))
@@ -84,8 +84,9 @@ def plot_most_interesting_features(features, names=None, maximize=True, thresh=0
 
 		plt.subplot(3, 3, i+1)
 		plt.plot(features[:,indices[0]], features[:,indices[1]])
-		plt.xlabel(names[indices[0]])
-		plt.ylabel(names[indices[1]])
+		if names is not None:
+			plt.xlabel(names[indices[0]])
+			plt.ylabel(names[indices[1]])
 		plt.title('Correlation coefficient: {}'\
 			.format(np.round(C[indices], 3)))
 		C[indices] = neutral

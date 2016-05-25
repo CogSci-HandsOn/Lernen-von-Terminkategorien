@@ -1,3 +1,8 @@
+
+# coding: utf-8
+
+# In[156]:
+
 """
 ============
 Convert data
@@ -13,7 +18,7 @@ import datetime
 
 import numpy as np
 import holidays
-
+import bisect
 
 # Maps the date categories onto integer codes
 label_mapping = {
@@ -28,8 +33,12 @@ label_mapping = {
 	}
 
 
-def get_features(filename):
-	return extract_features(convert_data(load_data(filename)))
+def get_features(filename="data"):
+	return extract_features(sorted(convert_data(load_data(filename)))) #we need our data sorted so we can easily acces it later
+
+def get_data(filename="data"):
+	return sorted(convert_data(load_data(filename)))
+
 
 def load_data(filename):
 	"""Loads each row of a .csvfile and puts them into a list.
@@ -59,8 +68,8 @@ def convert_data(raw_data):
 	Calls the 'load_data' function in order to retrieve information from
 	the given input .csv file. This data is then converted into a format
 	that can be used later.
-	The exact date is converted into a 'datetime.date' object. The 
-	beginning and end times are converted into 'datetime.time' objects.
+	The exact starting point is converted into a 'datetime.datetime' object.  
+    The end time is also are converted into 'datetime.datetime' object.
 	The string labels are converted into a coding scheme of integers defined
 	at the top of the module.
 
@@ -76,14 +85,11 @@ def convert_data(raw_data):
 	data = []
 	for i in range(len(raw_data)):
 		data_i = []
-		# Convert date
-		data_i.append(convert_date(raw_data[i][0]))
+		# Convert begin. i.e. date+starttime
+		data_i.append(convert_datetime(raw_data[i][0], raw_data[i][1]))
 
-		# Convert begin
-		data_i.append(convert_time(raw_data[i][1]))
-
-		# Convert ending
-		data_i.append(convert_time(raw_data[i][2]))
+		# Convert end. i.e. date+endtime
+		data_i.append(convert_datetime(raw_data[i][0], raw_data[i][2]))
 
 		# Convert label
 		data_i.append(convert_label(raw_data[i][3]))
@@ -125,19 +131,24 @@ def extract_features(data):
 	time_range = 8
 	num_features_per_date = 12
 	labels = [0] * len(data)
+	delta_times_for_regular_events = [-14, -7, -1, 1, 7, 14 ]
+	#when we later check what the event was e.g. exactly one week before
 	
-	features = np.zeros((len(data), num_features_per_date*time_range))
+	features = np.zeros((len(data), num_features_per_date*time_range+(len(delta_times_for_regular_events))+7))
 	initial_date = datetime.date(2015, 1, 1)
 	holiday_dates = holidays.Germany(state='NI', years=[2015, 2016, 2017, 2018, 2019, 2020])
+	timeForm = '%H:%M:%S'
+	startWork = '08:00:00'
+	endWork = '18:00:00'
+	startLunch = '11:30:00'
+	endLunch = '12:30:00'
 
-	for i in range(len(data)):
-
-		labels[i] = data[i][3][0]
-
-
+    
+	for i, sample in enumerate(data):
+		labels[i] = data[i][2][0]
 		## Features concerning the date
-
-		date = data[i][0]
+		
+		date = data[i][0].date()
 		for time_offset in range(time_range):
 			day = date + datetime.timedelta(days=time_offset-time_range/2)
 			offset = time_offset*num_features_per_date
@@ -149,15 +160,13 @@ def extract_features(data):
 			# Month of year
 			features[i,2+offset] = day.month
 			# Day of year
-			features[i,3+offset] = day.toordinal() \
-				- datetime.date(day.year, 1, 1).toordinal() + 1
+			features[i,3+offset] = day.toordinal() 				- datetime.date(day.year, 1, 1).toordinal() + 1
 			# Day of month
 			features[i,4+offset] = day.day
 			# Weekday
 			features[i,5+offset] = day.weekday()
 			# Weekend 1 / week 0
-			features[i,6+offset] = features[i,5+offset] == 5 or \
-				features[i,5+offset] == 6
+			features[i,6+offset] = features[i,5+offset] == 5 or 				features[i,5+offset] == 6
 			# Week of year # TODO: Kalenderwoche
 			features[i,7+offset] = np.floor(features[i,3] / 7)
 			# Week of month
@@ -168,8 +177,7 @@ def extract_features(data):
 			try:
 				holiday = holiday_dates[day]
 				# Christmas
-				if holiday == 'Erster Weihnachtstag' or \
-					holiday == 'Zweiter Weihnachtstag':
+				if holiday == 'Erster Weihnachtstag' or 					holiday == 'Zweiter Weihnachtstag':
 					features[i,10+offset] = 1
 				# Easter
 				elif holiday == 'Ostermontag':
@@ -180,7 +188,46 @@ def extract_features(data):
 
 			# TODO: Brückentag
 
-		
+			# taking care of regular events -----
+			# category of event x days different from the current event 
+			# as feature e.g. -7: (which event was exactly one week before 
+			# at the same time)
+			start_i_regular = time_range*num_features_per_date
+			# we have time_range times num_features_per_date features 
+			# so far. so we start after that. (use that as index)
+
+			for i_reg, delta_days in enumerate(delta_times_for_regular_events):
+				features[i,start_i_regular+i_reg] = event_before(data, sample[0], datetime.timedelta(delta_days))
+
+        # Features concerning the time
+		pos = start_i_regular + i_reg + 1
+		begin = str(data[i][0].time())
+		end = str(data[i][1].time())
+        # Duration in seconds
+		features[i,pos] = datetime.timedelta.total_seconds(datetime.datetime.strptime(end,timeForm) - 
+                                                            datetime.datetime.strptime(begin,timeForm))
+        # Extra long entry? (Longer than 3 hours)
+		features[i,pos+1] = int(features[i,pos]>10800)
+        # Extra short entry? (shorter than 1 hour)
+		features[i,pos+2] = int(features[i,pos]<3600)
+        # Before lunch?
+		features[i,pos+3] = int(begin<startLunch)
+        # Not in usual working hours?
+		features[i,pos+4] = int((begin<startWork) or (end>endWork))
+        # Entry over lunch break
+		features[i,pos+5] = int((begin<startLunch) and (end>endLunch))
+        # Conflict/overlap with another entry
+		if date == data[i-1][1].date():
+			endPrev = str(data[i-1][1].time())
+			features[i,pos+6] = int(endPrev > begin)
+		try: # To handle last entry
+			if date == data[i+1][0].date() and features[i,pos+6] == 0:
+				startNext = str(data[i+1][0].time())        
+				features[i,pos+6] = int((startNext < end))
+		except IndexError:
+			features[i,pos+6] = 0
+      
+		## Features concerning the time
 		default_names = ['Ordinal', 'Year', 'Month', 'Day of Year', 'Day of Month',
 			'Weekday', 'Weekend', 'Week of year', 'Week of month', 'Holiday',
 			'Christmas', 'Easter']
@@ -189,24 +236,57 @@ def extract_features(data):
 			for name in default_names:
 				names.append(name+' of day {}'.format(i-4))
 
-		## Features concerning the time
-		
-		
-
 	return features, labels, names
 
 
 # Conversion helpers
 
-def convert_date(date_str):
+def convert_datetime(date_str, time_str):
 	date_list = [int(x) for x in date_str.split(sep='.')]
-	return datetime.date(date_list[2], date_list[1], date_list[0])
-
-def convert_time(time_str):
 	time_list = [int(x) for x in time_str.split(sep=':')]
-	return datetime.time(time_list[0], time_list[1], time_list[2])
+	return datetime.datetime(date_list[2], date_list[1], date_list[0], time_list[0], time_list[1], time_list[2])
+
 
 def convert_label(label_str):
 	labels = label_str.split(sep=',')
 	return [label_mapping[label] for label in labels]
+
+def event_before(sorted_data, current_time, delta_time):
+	""" 
+		returns the category of the event delta_time away from the current one. 
+		delta_time is added to the current date
+		if there was no event at exactly that time it will return -1
+	"""
+
+	#when combaring lists, python first compares the first elements of the list. 
+	target_time = current_time+delta_time
+
+	try:
+		target_event = sorted_data[index_startdate(sorted_data, target_time)]
+		#print("event found")
+		return target_event[2][0]  #return the first category of that event. TODO think wether it makes sense to simpy use the first category
+	except ValueError:
+		#print(" there was no event found at that time")
+		return -1 #if no event was found. TODO think wether that makes any sense
+
+
+
+# helper
+
+# TODO: einfach den kategoriewert zurückgeben den es vor delta-time gab. 
+
+def index_startdate(data, x):
+    """ 
+    	Locate the leftmost event with start-time exactly equal to x in a sorted list
+    	data is the matrix of data 
+    	x is the startingtime as datetime object. 
+    	returns i: index of event that has the same startingtime
+    """
+    i = bisect.bisect_left(data, [x])
+    #since data is a list of lists we need to envelope the startingdate x in a list so the comparison works
+    if i != len(data) and data[i][0] == x:
+        return i
+    raise ValueError("Element not in list")
+
+    
 
