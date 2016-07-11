@@ -1,2 +1,2 @@
 
-__all__ = ['convert_data', 'plot_features']
+__all__ = ['model', 'convert_data']

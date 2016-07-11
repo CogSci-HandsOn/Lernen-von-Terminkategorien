@@ -1,0 +1,149 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Activation	src/keras_test.py	/^from keras.layers import Dense, SimpleRNN, Dropout, Activation$/;"	i
+Axes3D	src/plot_features.py	/^from mpl_toolkits.mplot3d import Axes3D$/;"	i
+Dense	src/keras_test.py	/^from keras.layers import Dense, SimpleRNN, Dropout, Activation$/;"	i
+Dropout	src/keras_test.py	/^from keras.layers import Dense, SimpleRNN, Dropout, Activation$/;"	i
+EarlyStopping	src/keras_test.py	/^from keras.callbacks import EarlyStopping, LearningRateScheduler, TensorBoard$/;"	i
+HiddenLayer	src/mlp.py	/^class HiddenLayer(object):$/;"	c
+LABEL_MAPPING	src/convert_data.py	/^LABEL_MAPPING = {$/;"	v
+LearningRateScheduler	src/keras_test.py	/^from keras.callbacks import EarlyStopping, LearningRateScheduler, TensorBoard$/;"	i
+LogisticRegression	src/logistic_sgd.py	/^class LogisticRegression(object):$/;"	c
+LogisticRegression	src/mlp.py	/^from logistic_sgd import LogisticRegression, load_data$/;"	i
+MLP	src/mlp.py	/^class MLP(object):$/;"	c
+PCA	src/convert_data.py	/^from sklearn.decomposition import PCA$/;"	i
+SGD	src/keras_test.py	/^from keras.optimizers import SGD$/;"	i
+Sequential	src/keras_test.py	/^from keras.models import Sequential$/;"	i
+SimpleRNN	src/keras_test.py	/^from keras.layers import Dense, SimpleRNN, Dropout, Activation$/;"	i
+T	src/logistic_sgd.py	/^import theano.tensor as T$/;"	i
+T	src/mlp.py	/^import theano.tensor as T$/;"	i
+T	src/model.py	/^import theano.tensor as T$/;"	i
+T_W	src/model.py	/^T_W = theano.shared(rng.randn(n_features), name="W")$/;"	v
+T_X	src/model.py	/^T_X = T.dmatrix("X")$/;"	v
+T_b	src/model.py	/^T_b = theano.shared(0., name="b")$/;"	v
+T_y	src/model.py	/^T_y = T.dvector("y")$/;"	v
+TensorBoard	src/keras_test.py	/^from keras.callbacks import EarlyStopping, LearningRateScheduler, TensorBoard$/;"	i
+TermineDataSet	src/tf_test.py	/^class TermineDataSet(object):$/;"	c
+X	src/model.py	/^X = scale(X)$/;"	v
+__all__	src/__init__.py	/^__all__ = ['convert_data', 'plot_features']$/;"	v
+__docformat__	src/logistic_sgd.py	/^__docformat__ = 'restructuredtext en'$/;"	v
+__docformat__	src/mlp.py	/^__docformat__ = 'restructuredtext en'$/;"	v
+__init__	src/logistic_sgd.py	/^	def __init__(self, input, n_in, n_out):$/;"	m	class:LogisticRegression
+__init__	src/mlp.py	/^	def __init__(self, rng, input, n_in, n_hidden, n_out):$/;"	m	class:MLP
+__init__	src/mlp.py	/^	def __init__(self, rng, input, n_in, n_out, W=None, b=None,$/;"	m	class:HiddenLayer
+__init__	src/tf_test.py	/^    def __init__(self, test_size=0.15, val_size=0.2, pca=0):$/;"	m	class:TermineDataSet
+absolute_import	src/tf_test.py	/^from __future__ import absolute_import$/;"	i
+activity_l1	src/keras_test.py	/^    activity_l1l2$/;"	i
+activity_l1l2	src/keras_test.py	/^    activity_l1l2$/;"	i
+activity_l2	src/keras_test.py	/^    activity_l1l2$/;"	i
+apply_pca	src/logistic_sgd.py	/^	def apply_pca(X, n_components=10):$/;"	f	function:load_data
+bisect	src/convert_data.py	/^import bisect$/;"	i
+convert_data	src/convert_data.py	/^def convert_data(raw_data):$/;"	f
+convert_data	src/keras_test.py	/^import convert_data$/;"	i
+convert_data	src/logistic_sgd.py	/^import convert_data$/;"	i
+convert_data	src/model.py	/^import convert_data$/;"	i
+convert_data	src/plot_features.py	/^import convert_data$/;"	i
+convert_data	src/tf_test.py	/^import convert_data$/;"	i
+convert_datetime	src/convert_data.py	/^def convert_datetime(date_str, time_str):$/;"	f
+convert_label	src/convert_data.py	/^def convert_label(label_str):$/;"	f
+cost	src/model.py	/^cost = xent.mean() + 0.01 * (T_W ** 2).sum()$/;"	v
+cross_validation	src/tf_test.py	/^import sklearn.cross_validation$/;"	i
+csv	src/convert_data.py	/^import csv$/;"	i
+datetime	src/convert_data.py	/^import datetime$/;"	i
+decomposition	src/logistic_sgd.py	/^import sklearn.decomposition$/;"	i
+decomposition	src/plot_features.py	/^import sklearn.decomposition$/;"	i
+decomposition	src/tf_test.py	/^import sklearn.decomposition$/;"	i
+distance	src/plot_features.py	/^import scipy.spatial.distance$/;"	i
+do_eval	src/tf_test.py	/^def do_eval(sess, eval_correct, input_placeholder, labels_placeholder,$/;"	f
+errors	src/logistic_sgd.py	/^	def errors(self, y):$/;"	m	class:LogisticRegression
+evaluation	src/tf_test.py	/^def evaluation(logits, labels):$/;"	f
+event_before	src/convert_data.py	/^def event_before(sorted_data, current_time, delta_time):$/;"	f
+extract_features	src/convert_data.py	/^def extract_features(data):$/;"	f
+fill_feed_dict	src/tf_test.py	/^def fill_feed_dict(data_set, subset, input_pl, labels_pl, batch_size):$/;"	f
+get_data	src/convert_data.py	/^def get_data(filename="data"):$/;"	f
+get_features	src/convert_data.py	/^def get_features(filename="data"):$/;"	f
+holidays	src/convert_data.py	/^import holidays$/;"	i
+index_startdate	src/convert_data.py	/^def index_startdate(data, x):$/;"	f
+inference	src/tf_test.py	/^def inference(inputs, layer_sizes=[109, 50, 8]):$/;"	f
+inputs	src/model.py	/^          inputs=[T_X,T_y],$/;"	v
+itertools	src/plot_features.py	/^import itertools$/;"	i
+l1	src/keras_test.py	/^    activity_l1l2$/;"	i
+l1l2	src/keras_test.py	/^    activity_l1l2$/;"	i
+l2	src/keras_test.py	/^    activity_l1l2$/;"	i
+load_data	src/convert_data.py	/^def load_data(filename='data', pca=0):$/;"	f
+load_data	src/logistic_sgd.py	/^def load_data(filename='data', pca=0):$/;"	f
+load_data	src/mlp.py	/^from logistic_sgd import LogisticRegression, load_data$/;"	i
+loss_func	src/tf_test.py	/^def loss_func(logits, labels, weights, lambda_param):$/;"	f
+main	src/keras_test.py	/^def main():$/;"	f
+main	src/tf_test.py	/^def main(_):$/;"	f
+matplotlib	src/plot_features.py	/^import matplotlib.pyplot as plt$/;"	i
+maxabs_scale	src/convert_data.py	/^from sklearn.preprocessing import scale, maxabs_scale$/;"	i
+moves	src/logistic_sgd.py	/^import six.moves.cPickle as pickle$/;"	i
+negative_log_likelihood	src/logistic_sgd.py	/^	def negative_log_likelihood(self, y):$/;"	m	class:LogisticRegression
+next_batch	src/tf_test.py	/^    def next_batch(self, size, subset=0):$/;"	m	class:TermineDataSet
+np	src/convert_data.py	/^import numpy as np$/;"	i
+np	src/keras_test.py	/^import numpy as np$/;"	i
+np	src/logistic_sgd.py	/^import numpy as np$/;"	i
+np	src/mlp.py	/^import numpy as np$/;"	i
+np	src/model.py	/^import numpy as np$/;"	i
+np	src/plot_features.py	/^import numpy as np$/;"	i
+np	src/tf_test.py	/^import numpy as np$/;"	i
+os	src/logistic_sgd.py	/^import os$/;"	i
+os	src/mlp.py	/^import os$/;"	i
+outputs	src/model.py	/^          outputs=[prediction, xent],$/;"	v
+p_1	src/model.py	/^p_1 = 1 \/ (1 + T.exp(-T.dot(T_X, T_W) - T_b))$/;"	v
+pickle	src/logistic_sgd.py	/^import six.moves.cPickle as pickle$/;"	i
+placeholder_inputs	src/tf_test.py	/^def placeholder_inputs(batch_size, n_features):$/;"	f
+plot_all_features	src/plot_features.py	/^def plot_all_features(features, names=None):$/;"	f
+plot_most_interesting_features	src/plot_features.py	/^def plot_most_interesting_features(features, names=None, maximize=True, thresh=0.2):$/;"	f
+plot_principal_components	src/plot_features.py	/^def plot_principal_components(features, labels, n_components=3):$/;"	f
+plt	src/plot_features.py	/^import matplotlib.pyplot as plt$/;"	i
+predict	src/logistic_sgd.py	/^def predict():$/;"	f
+predict	src/model.py	/^predict = theano.function(inputs=[T_X], outputs=prediction)$/;"	v
+prediction	src/model.py	/^prediction = p_1 > 0.5$/;"	v
+preprocessing	src/tf_test.py	/^import sklearn.preprocessing$/;"	i
+print_function	src/logistic_sgd.py	/^from __future__ import print_function$/;"	i
+print_function	src/mlp.py	/^from __future__ import print_function$/;"	i
+read_data	src/convert_data.py	/^def read_data(filename):$/;"	f
+rng	src/model.py	/^rng = np.random$/;"	v
+run_training	src/tf_test.py	/^def run_training(learning_rate=0.1, test_size=0.15, val_size=0.2, batch_size=20, max_steps=1000, hidden_sizes=[50], pca=0, lambda_param=0, train_dir='..\/res'):$/;"	f
+scale	src/convert_data.py	/^from sklearn.preprocessing import scale, maxabs_scale$/;"	i
+scale	src/logistic_sgd.py	/^from sklearn.preprocessing import scale$/;"	i
+scale	src/model.py	/^from sklearn.preprocessing import scale$/;"	i
+scipy	src/plot_features.py	/^import scipy.spatial.distance$/;"	i
+sgd_optimization	src/logistic_sgd.py	/^def sgd_optimization(learning_rate=0.1, n_epochs=1000, $/;"	f
+shared_dataset	src/logistic_sgd.py	/^	def shared_dataset(X, y, borrow=True):$/;"	f	function:load_data
+six	src/logistic_sgd.py	/^import six.moves.cPickle as pickle$/;"	i
+sklearn	src/logistic_sgd.py	/^import sklearn.decomposition$/;"	i
+sklearn	src/plot_features.py	/^import sklearn.decomposition$/;"	i
+sklearn	src/tf_test.py	/^import sklearn.cross_validation$/;"	i
+sklearn	src/tf_test.py	/^import sklearn.decomposition$/;"	i
+sklearn	src/tf_test.py	/^import sklearn.preprocessing$/;"	i
+spatial	src/plot_features.py	/^import scipy.spatial.distance$/;"	i
+sys	src/mlp.py	/^import sys$/;"	i
+test_mlp	src/mlp.py	/^def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,$/;"	f
+tf	src/tf_test.py	/^import tensorflow as tf$/;"	i
+theano	src/logistic_sgd.py	/^import theano$/;"	i
+theano	src/logistic_sgd.py	/^import theano.tensor as T$/;"	i
+theano	src/mlp.py	/^import theano$/;"	i
+theano	src/mlp.py	/^import theano.tensor as T$/;"	i
+theano	src/model.py	/^import theano$/;"	i
+theano	src/model.py	/^import theano.tensor as T$/;"	i
+time	src/keras_test.py	/^import time$/;"	i
+time	src/tf_test.py	/^import time$/;"	i
+timeit	src/logistic_sgd.py	/^import timeit$/;"	i
+timeit	src/mlp.py	/^import timeit$/;"	i
+to_categorical	src/keras_test.py	/^from keras.utils.np_utils import to_categorical$/;"	i
+train	src/model.py	/^train = theano.function($/;"	v
+train_test_split	src/convert_data.py	/^from sklearn.cross_validation import train_test_split$/;"	i
+train_test_split	src/logistic_sgd.py	/^from sklearn.cross_validation import train_test_split$/;"	i
+train_test_split	src/model.py	/^from sklearn.cross_validation import train_test_split$/;"	i
+training	src/tf_test.py	/^def training(loss, learning_rate):$/;"	f
+training_steps	src/model.py	/^training_steps = 10000$/;"	v
+updates	src/model.py	/^          updates=((T_W, T_W - 0.1 * gW), (T_b, T_b - 0.1 * gb)))$/;"	v
+xent	src/model.py	/^xent = -T_y * T.log(p_1) - (1-T_y) * T.log(1-p_1) $/;"	v
+xrange	src/tf_test.py	/^from six.moves import xrange$/;"	i
