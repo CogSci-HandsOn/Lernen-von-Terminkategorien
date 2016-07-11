@@ -179,4 +179,4 @@ features, labels, names = convert_data.get_features(
 
 # plot_all_features(features, names)
 # plot_most_interesting_features(features, names, False, thresh=0.05)
-# plot_principal_components(features, labels, 50)
+plot_principal_components(features, labels, 50)

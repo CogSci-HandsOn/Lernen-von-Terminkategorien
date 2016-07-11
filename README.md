@@ -1,1 +1,1 @@
-# Lernen-von-Terminkategorien
+# Lernen von Terminkategorien
